@@ -1,0 +1,39 @@
+---
+- name: Instalar K3s en el Nodo Maestro
+  hosts: k8s_nodes
+  tasks:
+    # Tarea A: Instalación limpia en el Maestro indicando que no use systemd
+    - name: Instalar K3s en el Maestro
+      shell: curl -sfL https://get.k3s.io | INSTALL_K3S_SKIP_ENABLE=true sh -
+      when: inventory_hostname == 'nodo-maestro'
+
+    # Tarea B: Arrancar el cerebro de Kubernetes en segundo plano directamente
+    - name: Arrancar K3s Server a mano en el Maestro
+      shell: k3s server &
+      async: 30
+      poll: 0
+      when: inventory_hostname == 'nodo-maestro'
+
+    # Tarea C: Esperar un momento a que genere las llaves y el Token
+    - name: Esperar a que K3s inicie
+      pause:
+        seconds: 45
+      when: inventory_hostname == 'nodo-maestro'
+
+    # Tarea D: Leer el Token Secreto generado
+    - name: Obtener el Token del clúster del Maestro
+      shell: cat /var/lib/rancher/k3s/server/node-token
+      register: k3s_token
+      when: inventory_hostname == 'nodo-maestro'
+
+    # Tarea E: Instalar ejecutables en el Trabajador sin usar systemd
+    - name: Instalar K3s en el Trabajador
+      shell: curl -sfL https://get.k3s.io | INSTALL_K3S_SKIP_ENABLE=true sh -
+      when: inventory_hostname == 'nodo-trabajador'
+
+    # Tarea F: Arrancar el agente del Trabajador conectado al maestro
+    - name: Arrancar K3s Agent a mano en el Trabajador
+      shell: "k3s agent --server https://172.17.0.2:6443 --token {{ hostvars['nodo-maestro']['k3s_token']['stdout'] }} &"
+      async: 30
+      poll: 0
+      when: inventory_hostname == 'nodo-trabajador'

@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-python-ingress
+  annotations:
+    # Le indicamos al clúster que este tráfico lo va a gestionar el controlador de Nginx integrado
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: traefik # K3d usa por defecto Traefik/Nginx ingress integrado de forma nativa
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api-python-service # El nombre exacto del Servicio que creamos antes
+            port:
+              number: 80 # El puerto del Servicio

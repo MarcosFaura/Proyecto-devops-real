@@ -1,0 +1,23 @@
+---
+# 1. Definimos el grupo de servidores y que use el usuario root
+- name: Preparar servidores para Kubernetes
+  hosts: k8s_nodes
+  gather_facts: true
+
+  # 2. Lista de tareas automáticas
+  tasks:
+    # Tarea A: Actualizar la lista de paquetes del sistema (el equivalente a apt update)
+    - name: Actualizar la caché de APT
+      apt:
+        update_cache: yes
+
+    # Tarea B: Instalar herramientas del sistema necesarias
+    - name: Instalar herramientas requeridas (curl, certs)
+      apt:
+        name:
+          - curl
+          - ca-certificates
+          - apt-transport-https
+        state: present
+
+

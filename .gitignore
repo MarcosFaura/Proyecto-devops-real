@@ -1,2 +1,6 @@
+.terraform/
+*.tfstate*
+kubectl
+k3d
 __pycache__/
 *.pyc
