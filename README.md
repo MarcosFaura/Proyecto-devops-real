@@ -50,53 +50,51 @@ graph TD
 
 ---
 
-## 🚀 Guía de Despliegue y Ejecución
+### 🚀 Guía de Despliegue y Ejecución (Cómo probar el proyecto)
 
-### 1. Construcción Local y Docker
-Para empaquetar y validar la aplicación de forma aislada en local:
+Para validar el funcionamiento completo de este clúster multinodo y la aplicación en alta disponibilidad, sigue estos pasos estructurados en una máquina que disponga de **Docker** y **Git** instalados:
+
+#### 1. Preparación del Entorno
+*   **Instalar K3d**: Descarga e instala la herramienta oficial de K3d en el sistema para permitir la simulación del clúster sobre Docker.
+*   **Instalar Kubectl**: Descarga e instala el binario oficial de `kubectl` para disponer del mando a distancia de administración de Kubernetes.
+
+#### 2. Creación de la Infraestructura Local
+Ejecuta el siguiente comando para instanciar el clúster (1 nodo maestro y 1 nodo trabajador) abriendo el túnel de tráfico hacia el puerto 80 del ordenador:
 ```bash
-docker build -t api-devops-python:v1 .
-docker run -d -p 8000:8000 --name api-local api-devops-python:v1
-curl http://localhost:8000
+k3d cluster create mi-cluster --agents 1 -p "80:80@loadbalancer"
 ```
 
-### 2. Automatización CI/CD (GitHub Actions)
-El archivo `.github/workflows/ci-pipeline.yml` se dispara automáticamente con cada `git push` a la rama `main`. Ejecuta los siguientes pasos en runners en la nube:
-1. Descarga del código fuente.
-2. Configuración del entorno Docker Buildx.
-3. Autenticación segura en Docker Hub mediante variables cifradas de entorno.
-4. Construcción y empuje de la imagen Docker final con el tag `latest`.
-
-### 3. Aprovisionamiento Cloud (Terraform)
-Ubicado en la carpeta `infraestructura/`. Permite levantar la red perimetral de seguridad en la nube de Oracle (Madrid):
+#### 3. Despliegue de los Manifiestos de Kubernetes
+Desde la raíz del repositorio clonado, aplica de forma secuencial los planos declarativos de la aplicación y las reglas de enrutamiento del Ingress:
 ```bash
-terraform init
-terraform plan
-terraform apply -auto-approve
-```
-
-### 4. Orquestación Automática (Ansible)
-Ubicado en la carpeta `ansible/`. Automatiza la preparación de las máquinas virtuales y la instalación base del clúster de Kubernetes:
-```bash
-ansible-playbook -i inventory.ini preparar_nodos.yml
-```
-
-### 5. Operación en Kubernetes
-El clúster ejecuta **dos réplicas** de la aplicación en estado de alta disponibilidad. Los comandos de despliegue y control de tráfico utilizados son:
-```bash
-# Aplicar manifiestos de aplicación y enrutamiento
 kubectl apply -f k8s/k8s-despliegue.yaml
 kubectl apply -f k8s/k8s-ingress.yaml
-
-# Comprobar el estado de los nodos del clúster y los Pods
-kubectl get nodes
-kubectl get pods
-
-# Simular actualización en producción sin caída de servicio (Zero-Downtime)
-kubectl rollout restart deployment/api-python-deployment
 ```
 
----
+#### 4. Verificación del Estado del Clúster
+Asegúrate de que los servidores virtuales y las réplicas de la aplicación se han descargado correctamente desde Docker Hub [A] y se encuentran operativos:
+```bash
+# Comprobar que el nodo maestro y el agente están listos
+kubectl get nodes
+
+# Comprobar que las 2 réplicas (Pods) de Python están en estado 'Running'
+kubectl get pods
+```
+
+#### 5. Validación del Servicio Web
+Tras esperar unos 15 segundos a que los contenedores inicien, realiza una petición de tráfico HTTP para comprobar el balanceo de carga:
+```bash
+curl http://localhost
+```
+*Respuesta esperada:* `{"status":"funcionando","message":"¡Proyecto DevOps completado con éxito por Marcos!"}`
+
+#### 🔄 6. Cómo actualizar la aplicación en producción (CI/CD)
+Si realizas cualquier modificación en el código fuente (`main.py`), el flujo para actualizar el clúster en caliente sin caída de servicio es:
+1. Sube tus cambios a GitHub mediante `git push origin main`. El pipeline de GitHub Actions compilará la nueva imagen y la subirá automáticamente a Docker Hub [A].
+2. Una vez que el pipeline termine en verde, ordena a Kubernetes una actualización progresiva ejecutando:
+```bash
+kubectl rollout restart deployment/api-python-deployment
+```
 
 ## 🔍 Habilidades Demostradas en este Proyecto
 
