@@ -4,14 +4,7 @@ Este proyecto demuestra habilidades avanzadas de ingeniería DevOps mediante el 
 
 ## 🗺️ Arquitectura del Sistema
 
-```mermaid
-graph TD
-    A[Código en GitHub] -->|GitHub Actions| B[Docker Hub Almacén]
-    B -->|Despliegue en Caliente| C[Kubernetes Clúster]
-    C -->|Nodo Maestro| D[Nodo Trabajador Pods]
-    E[Usuario / curl] -->|Puerto 80| F[Nginx/Traefik Ingress]
-    F --> D
-```
+<img width="1314" height="1197" alt="ChatGPT Image 3 jul 2026, 13_35_56" src="https://github.com/user-attachments/assets/7ee5efc6-7e8b-4ab8-8633-32b7fed857c0" />
 
 ---
 
