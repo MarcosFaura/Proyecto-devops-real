@@ -17,14 +17,14 @@ jobs:
       with:
         python-version: '3.11'
 
-    # === NUEVO PASO: Instalar lo necesario para probar la API ===
     - name: Instalar dependencias de pruebas
       run: |
         python -m pip install --upgrade pip
         pip install fastapi uvicorn pytest httpx
 
-    # === NUEVO PASO: Ejecutar el test que acabamos de crear ===
     - name: Ejecutar Pruebas Unitarias (Pytest)
+      env:
+        PYTHONPATH: .
       run: |
         pytest tests/test_main.py
 
