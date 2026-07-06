@@ -18,7 +18,7 @@ spec:
       containers:
       - name: mi-api-python
         # REEMPLAZA con tu usuario real de Docker Hub, donde subimos la imagen en fases anteriores
-        image: marcosfauase/proyecto-real:CAMBIADO_POR_CI
+        image: marcosfauase/proyecto-real:latest
         # Le ordenamos a Kubernetes que se baje la imagen siempre de internet para tener la última versión
         imagePullPolicy: Always
         ports:

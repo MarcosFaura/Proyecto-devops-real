@@ -7,6 +7,10 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
 
     steps:
     - name: Descargar código del repositorio
@@ -48,6 +52,17 @@ jobs:
           -Dsonar.organization=marcosfaura
           -Dsonar.qualitygate.wait=false
 
+    - name: Ejecutar Semantic Release (Calcular versión SemVer)
+      id: semantic
+      uses: cycjimmy/semantic-release-action@v4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Llave interna automática de GitHub
+      with:
+        branch: main
+        extra_plugins: |
+          @semantic-release/commit-analyzer
+          @semantic-release/release-notes-generator
+
     - name: Configurar Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -57,29 +72,11 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    - name: Calcular Versión Semántica Automática
-      id: semver
-      run: |
-        # Definimos la base de nuestra versión actual
-        BASE_VERSION="1.0.0"
-        
-        # Si el push viene de la rama principal 'main', dejamos la versión limpia
-        if [ "${{ github.ref_name }}" = "main" ]; then
-          FINAL_TAG="${BASE_VERSION}"
-        # Si viene de la rama 'develop', le concatenamos el sufijo exigido -SNAPSHOT
-        elif [ "${{ github.ref_name }}" = "develop" ]; then
-          FINAL_TAG="${BASE_VERSION}-SNAPSHOT"
-        else
-          # Para cualquier otra rama de desarrollo auxiliar
-          FINAL_TAG="${BASE_VERSION}-M1"
-        fi
-        
-        # Guardamos el número calculado en el entorno global del pipeline
-        echo "VERSION_TAG=${FINAL_TAG}" >> $GITHUB_ENV
-
     - name: Compilar y subir imagen
       uses: docker/build-push-action@v6
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/proyecto-real:${{ env.VERSION_TAG }}
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/proyecto-real:${{ steps.semantic.outputs.new_release_version || '1.0.0-draft' }}
+          ${{ secrets.DOCKERHUB_USERNAME }}/proyecto-real:latest
