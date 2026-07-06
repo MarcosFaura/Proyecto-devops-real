@@ -11,6 +11,9 @@ jobs:
     steps:
     - name: Descargar código del repositorio
       uses: actions/checkout@v4
+      with:
+        # IMPORTANTE: Necesitamos depth: 0 para que SonarQube pueda leer todo el histórico de Git
+        fetch-depth: 0
 
     - name: Configurar entorno de Python
       uses: actions/setup-python@v5
@@ -32,6 +35,18 @@ jobs:
       run: |
         # Escaneamos el entorno de Python buscando fallos de seguridad en las librerías
         pip-audit --desc on
+
+    - name: Análisis Estático de Código con SonarQube
+      uses: sonarsource/sonarqube-scan-action@v2.3.0
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      with:
+        # El parámetro wait=false hace que el análisis sea ASÍNCRONO (requisito de Fabián)
+        args: >
+          -Dsonar.projectKey=MarcosFaura_Proyecto-devops-real
+          -Dsonar.organization=marcosfaura
+          -Dsonar.qualitygate.wait=false
 
     - name: Configurar Docker Buildx
       uses: docker/setup-buildx-action@v3
