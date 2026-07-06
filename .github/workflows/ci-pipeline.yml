@@ -12,6 +12,22 @@ jobs:
     - name: Descargar código del repositorio
       uses: actions/checkout@v4
 
+    - name: Configurar entorno de Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    # === NUEVO PASO: Instalar lo necesario para probar la API ===
+    - name: Instalar dependencias de pruebas
+      run: |
+        python -m pip install --upgrade pip
+        pip install fastapi uvicorn pytest httpx
+
+    # === NUEVO PASO: Ejecutar el test que acabamos de crear ===
+    - name: Ejecutar Pruebas Unitarias (Pytest)
+      run: |
+        pytest tests/test_main.py
+
     - name: Configurar Docker Buildx
       uses: docker/setup-buildx-action@v3
 
