@@ -2,7 +2,7 @@ name: Integración de Pipeline Continua (CI)
 
 on:
   push:
-   branches: [ "main" ]
+   branches: [ "main" , "develop"]
 
 jobs:
   build-and-test:
@@ -57,9 +57,29 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+    - name: Calcular Versión Semántica Automática
+      id: semver
+      run: |
+        # Definimos la base de nuestra versión actual
+        BASE_VERSION="1.0.0"
+        
+        # Si el push viene de la rama principal 'main', dejamos la versión limpia
+        if [ "${{ github.ref_name }}" = "main" ]; then
+          FINAL_TAG="${BASE_VERSION}"
+        # Si viene de la rama 'develop', le concatenamos el sufijo exigido -SNAPSHOT
+        elif [ "${{ github.ref_name }}" = "develop" ]; then
+          FINAL_TAG="${BASE_VERSION}-SNAPSHOT"
+        else
+          # Para cualquier otra rama de desarrollo auxiliar
+          FINAL_TAG="${BASE_VERSION}-M1"
+        fi
+        
+        # Guardamos el número calculado en el entorno global del pipeline
+        echo "VERSION_TAG=${FINAL_TAG}" >> $GITHUB_ENV
+
     - name: Compilar y subir imagen
       uses: docker/build-push-action@v6
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/proyecto-real:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/proyecto-real:${{ env.VERSION_TAG }}
