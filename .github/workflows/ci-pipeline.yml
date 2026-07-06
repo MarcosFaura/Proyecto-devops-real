@@ -59,9 +59,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Llave interna automática de GitHub
       with:
         branch: main
-        extra_plugins: |
-          @semantic-release/commit-analyzer
-          @semantic-release/release-notes-generator
+        plugins: |
+          plugins: |
+          ['@semantic-release/commit-analyzer', {preset: 'angular'}]
+          ['@semantic-release/release-notes-generator', {preset: 'angular'}]
+          ['@semantic-release/github', {assets: []}]
 
     - name: Configurar Docker Buildx
       uses: docker/setup-buildx-action@v3
