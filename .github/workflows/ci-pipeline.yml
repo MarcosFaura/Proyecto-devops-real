@@ -52,19 +52,6 @@ jobs:
           -Dsonar.organization=marcosfaura
           -Dsonar.qualitygate.wait=false
 
-    - name: Ejecutar Semantic Release (Calcular versión SemVer)
-      id: semantic
-      uses: cycjimmy/semantic-release-action@v4
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Llave interna automática de GitHub
-      with:
-        branch: main
-        plugins: |
-          plugins: |
-          ['@semantic-release/commit-analyzer', {preset: 'angular'}]
-          ['@semantic-release/release-notes-generator', {preset: 'angular'}]
-          ['@semantic-release/github', {assets: []}]
-
     - name: Configurar Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -73,6 +60,18 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Calcular Versión Semántica Dinámica
+      id: vars
+      run: |
+        # Contamos cuántos commits llevas acumulados en Git
+        COUNT=$(git rev-list --count HEAD)
+        
+        if [ "${{ github.ref_name }}" = "main" ]; then
+          echo "VERSION_TAG=1.0.${COUNT}" >> $GITHUB_ENV
+        else
+          echo "VERSION_TAG=1.0.${COUNT}-SNAPSHOT" >> $GITHUB_ENV
+        fi
 
     - name: Compilar y subir imagen
       uses: docker/build-push-action@v6
