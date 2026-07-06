@@ -79,7 +79,7 @@ Tras esperar unos 15 segundos a que los contenedores inicien, realiza una petici
 ```bash
 curl http://localhost
 ```
-*Respuesta esperada:* `{"status":"funcionando","message":"¡Proyecto DevOps completado con éxito por Marcos!"}`
+*Respuesta esperada:* `{"status":"funcionando","message":"¡Proyecto DevOps completado con éxito por Marcos Faura!"}`
 
 #### 🔄 6. Cómo actualizar la aplicación en producción (CI/CD)
 Si realizas cualquier modificación en el código fuente (`main.py`), el flujo para actualizar el clúster en caliente sin caída de servicio es:

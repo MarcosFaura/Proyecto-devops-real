@@ -8,5 +8,5 @@ app = FastAPI(title="Mi API DevOps")
 def read_root():
     return {
         "status": "funcionando",
-        "message": "¡Proyecto DevOps completado con éxito por Marcos!"
+        "message": "¡Proyecto DevOps completado con éxito por Marcos Faura!"
     }
