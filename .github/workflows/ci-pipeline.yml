@@ -33,7 +33,7 @@ jobs:
       env:
         PYTHONPATH: .
       run: |
-        pytest tests/test_main.py
+        python -m pytest tests/test_main.py
 
     - name: Análisis de Vulnerabilidades OWASP (pip-audit)
       run: |
@@ -79,5 +79,5 @@ jobs:
         context: .
         push: true
         tags: |
-          ${{ secrets.DOCKERHUB_USERNAME }}/proyecto-real:${{ steps.semantic.outputs.new_release_version || '1.0.0-draft' }}
+          ${{ secrets.DOCKERHUB_USERNAME }}/proyecto-real:${{ env.VERSION_TAG }}
           ${{ secrets.DOCKERHUB_USERNAME }}/proyecto-real:latest
