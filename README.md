@@ -1,4 +1,4 @@
-# 🚀 Plataforma de Despliegue GitOps y Orquestación Multinodo
+# 🚀 Plataforma DevOps de CI/CD, Infraestructura como Código y Orquestación Kubernetes
 
 Este proyecto demuestra habilidades avanzadas de ingeniería DevOps mediante el diseño e implementación de un ciclo de vida completo de entrega continua (CI/CD), automatización de infraestructura y orquestación de contenedores en alta disponibilidad, utilizando herramientas de código abierto.
 
