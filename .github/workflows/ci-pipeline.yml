@@ -26,9 +26,16 @@ jobs:
 
     - name: Instalar dependencias de pruebas
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        pip install fastapi uvicorn pytest httpx pip-audit pytest-cov
+        python -m pip install --upgrade pip --only-binary=:all:
+        python -m pip install --upgrade setuptools --only-binary=:all:
+        python -m pip install \
+            fastapi==0.111.0 \
+            uvicorn==0.30.1 \
+            pytest==8.3.5 \
+            httpx==0.27.0 \
+            pip-audit==2.9.0 \
+            pytest-cov==6.0.0 \
+            --only-binary=:all:
 
     - name: Ejecutar Pruebas Unitarias (Pytest)
       env:
