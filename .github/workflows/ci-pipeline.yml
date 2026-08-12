@@ -31,7 +31,7 @@ jobs:
 
       - name: Instalar dependencias de la aplicación
         run: |
-          pip install -r requirements-lock.txt --only-binary=:all:
+          pip install --require-hashes -r requirements-lock.txt --only-binary=:all:
 
       - name: Instalar herramientas de CI
         run: |

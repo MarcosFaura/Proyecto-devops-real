@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY requirements-lock.txt .
 
-RUN pip install --no-cache-dir --only-binary=:all: -r requirements-lock.txt
+RUN pip install --no-cache-dir --require-hashes --only-binary=:all: -r requirements-lock.txt
 
 RUN useradd --create-home appuser
 
