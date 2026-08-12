@@ -28,13 +28,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
-        pip install fastapi uvicorn pytest httpx pip-audit
+        pip install fastapi uvicorn pytest httpx pip-audit pytest-cov
 
     - name: Ejecutar Pruebas Unitarias (Pytest)
       env:
         PYTHONPATH: .
       run: |
-        python -m pytest tests/test_main.py
+        python -m pytest tests/test_main.py --cov=. --cov-report=xml
 
     - name: Análisis de Vulnerabilidades OWASP (pip-audit)
       run: |
