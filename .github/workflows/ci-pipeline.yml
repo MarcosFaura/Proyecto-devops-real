@@ -34,8 +34,9 @@ jobs:
           pip install -r requirements-lock.txt --only-binary=:all:
 
       - name: Instalar herramientas de CI
-        run:
+        run: |
           pip install --require-hashes -r requirements-ci.txt --only-binary=:all:
+
       - name: Ejecutar Pruebas Unitarias (Pytest)
         env:
           PYTHONPATH: .
