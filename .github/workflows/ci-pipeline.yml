@@ -23,16 +23,17 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+    
+    - name: Instalar dependencias de la aplicación
+        run: |
+          python -m pip install --upgrade pip --only-binary=:all:
+          pip install -r requirements.txt --only-binary=:all:
 
-    - name: Instalar dependencias de pruebas
-      run: |
-        python -m pip install --upgrade pip --only-binary=:all:
-        python -m pip install --upgrade setuptools --only-binary=:all:
-        python -m pip install \
-            fastapi==0.111.0 \
-            uvicorn==0.30.1 \
-            pytest==8.3.5 \
-            httpx==0.27.0 \
+    - name: Instalar herramientas de CI
+        run: |
+          pip install \
+            pytest==9.0.3 \
+            httpx==0.28.1 \
             pip-audit==2.9.0 \
             pytest-cov==6.0.0 \
             --only-binary=:all:
@@ -46,7 +47,7 @@ jobs:
     - name: Análisis de Vulnerabilidades OWASP (pip-audit)
       run: |
         # Escaneamos el entorno de Python buscando fallos de seguridad en las librerías
-        pip-audit --desc on
+        pip-audit --desc
     - name: Configurar Java 21
       uses: actions/setup-java@v4
       with:
